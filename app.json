@@ -1,0 +1,24 @@
+{
+  "name": "LineBotTemplate",
+  "description": "Line Bot API template",
+  "repository": "https://github.com/kkdai/LineBotTemplate",
+  "keywords": ["Line", "go", "static"],
+  "buildpacks": [
+    {
+      "url": "https://github.com/kr/heroku-buildpack-go.git"
+    },
+    {
+      "url": "heroku/go"
+    }
+  ],
+  "env": {
+    "ChannelAccessToken": {
+      "description": "Channel Access Token",
+      "required": true
+    },
+    "ChannelSecret": {
+      "description": "Channel Secret",
+      "required": true
+    }
+  }
+}
