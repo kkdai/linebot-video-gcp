@@ -19,7 +19,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
@@ -59,13 +58,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch message := event.Message.(type) {
 			// Handle only on text message
 			case *linebot.TextMessage:
-				// GetMessageQuota: Get how many remain free tier push message quota you still have this month. (maximum 500)
-				quota, err := bot.GetMessageQuota().Do()
-				if err != nil {
-					log.Println("Quota err:", err)
-				}
-
-				ret := "msg ID:" + message.ID + ":" + "Get:" + message.Text + " , \n OK! remain message:" + strconv.FormatInt(quota.Value, 10)
+				ret := message.Text
 				if message.Text == "video" {
 					_, err := storage.NewClient(context.Background())
 					if err != nil {
