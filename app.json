@@ -1,8 +1,12 @@
 {
-  "name": "LineBotTemplate",
-  "description": "Line Bot API template",
-  "repository": "https://github.com/kkdai/LineBotTemplate",
-  "keywords": ["Line", "go", "static"],
+  "name": "linebot-video",
+  "description": "Line Bot for Video Editing",
+  "repository": "https://github.com/kkdai/linebot-video",
+  "keywords": [
+    "Line",
+    "go",
+    "static"
+  ],
   "buildpacks": [
     {
       "url": "https://github.com/kr/heroku-buildpack-go.git"

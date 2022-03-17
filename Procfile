@@ -1,2 +1,2 @@
-web: LineBotTemplate
+web: linebot-video
 
