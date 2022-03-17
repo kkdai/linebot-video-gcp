@@ -24,8 +24,14 @@ import (
 
 var bot *linebot.Client
 
+var projectID string
+var bucketName string
+
 func main() {
 	var err error
+	projectID = os.Getenv("GCS_PROJECT_ID")
+	bucketName = os.Getenv("GCS_BUCKET_NAME")
+
 	bot, err = linebot.New(os.Getenv("ChannelSecret"), os.Getenv("ChannelAccessToken"))
 	log.Println("Bot:", bot, " err:", err)
 	http.HandleFunc("/callback", callbackHandler)

@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-const (
-	projectID  = "your-project-id"  // FILL IN WITH YOURS
-	bucketName = "your-bucket-name" // FILL IN WITH YOURS
-)
-
 type ClientUploader struct {
 	cl         *storage.Client
 	projectID  string
