@@ -65,8 +65,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					log.Println("Quota err:", err)
 				}
 
+				ret := "msg ID:" + message.ID + ":" + "Get:" + message.Text + " , \n OK! remain message:" + strconv.FormatInt(quota.Value, 10)
 				if message.Text == "video" {
-					ret := ""
 					_, err := storage.NewClient(context.Background())
 					if err != nil {
 						ret = "storage.NewClient: " + err.Error()
@@ -76,11 +76,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
 						log.Print(err)
 					}
-				}
-				// message.ID: Msg unique ID
-				// message.Text: Msg text
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("msg ID:"+message.ID+":"+"Get:"+message.Text+" , \n OK! remain message:"+strconv.FormatInt(quota.Value, 10))).Do(); err != nil {
-					log.Print(err)
 				}
 
 			// Handle only on Sticker message
