@@ -13,6 +13,8 @@
 package main
 
 import (
+	"cloud.google.com/go/storage"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -61,6 +63,19 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				quota, err := bot.GetMessageQuota().Do()
 				if err != nil {
 					log.Println("Quota err:", err)
+				}
+
+				if message.Text == "video" {
+					ret := ""
+					_, err := storage.NewClient(context.Background())
+					if err != nil {
+						ret = "storage.NewClient: " + err.Error()
+					} else {
+						ret = "storage.NewClient: OK"
+					}
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+						log.Print(err)
+					}
 				}
 				// message.ID: Msg unique ID
 				// message.Text: Msg text
