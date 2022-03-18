@@ -92,6 +92,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					ret = "storage.NewClient: OK"
 				}
 
+				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
+
 				// Get the video data
 				resp, err := http.Get(message.ContentProvider.OriginalContentURL)
 				if err != nil {
