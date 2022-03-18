@@ -16,7 +16,6 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -83,6 +82,49 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					log.Print(err)
 				}
 
+			// Handle only image message
+			case *linebot.ImageMessage:
+				log.Println("Got img msg from:", message)
+				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
+				ret := fmt.Sprintf("Get img from %s", message.ContentProvider.OriginalContentURL)
+
+				client, err := storage.NewClient(context.Background())
+				if err != nil {
+					ret = "storage.NewClient: " + err.Error()
+				} else {
+					ret = "storage.NewClient: OK"
+				}
+				if len(message.ContentProvider.OriginalContentURL) > 0 {
+					// Get the video data
+					resp, err := http.Get(message.ContentProvider.OriginalContentURL)
+					if err != nil {
+						log.Print(err)
+					}
+					defer resp.Body.Close()
+
+					uploader := &ClientUploader{
+						cl:         client,
+						bucketName: bucketName,
+						projectID:  projectID,
+						uploadPath: "test-files/",
+					}
+
+					err = uploader.UploadFile(resp.Body, "test.jpg")
+					if err != nil {
+						ret = "uploader.UploadFile: " + err.Error()
+					} else {
+						ret = "uploader.UploadFile: OK"
+					}
+
+				} else {
+					log.Println("Empty video")
+					ret = "Empty video"
+				}
+
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+					log.Print(err)
+				}
+
 			// Handle only video message
 			case *linebot.VideoMessage:
 				ret := fmt.Sprintf("Get video from %s", message.ContentProvider.OriginalContentURL)
@@ -93,9 +135,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					ret = "storage.NewClient: OK"
 				}
 
-				bodyBytes, _ := io.ReadAll(r.Body)
-
-				log.Println("Got video raw event data from:", string(bodyBytes))
 				log.Println("Got video msg from:", message)
 				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
 
