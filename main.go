@@ -92,27 +92,34 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					ret = "storage.NewClient: OK"
 				}
 
+				log.Println("Got video msg from:", message)
 				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
 
-				// Get the video data
-				resp, err := http.Get(message.ContentProvider.OriginalContentURL)
-				if err != nil {
-					log.Print(err)
-				}
-				defer resp.Body.Close()
+				if len(message.ContentProvider.OriginalContentURL) > 0 {
+					// Get the video data
+					resp, err := http.Get(message.ContentProvider.OriginalContentURL)
+					if err != nil {
+						log.Print(err)
+					}
+					defer resp.Body.Close()
 
-				uploader := &ClientUploader{
-					cl:         client,
-					bucketName: bucketName,
-					projectID:  projectID,
-					uploadPath: "test-files/",
-				}
+					uploader := &ClientUploader{
+						cl:         client,
+						bucketName: bucketName,
+						projectID:  projectID,
+						uploadPath: "test-files/",
+					}
 
-				err = uploader.UploadFile(resp.Body, "video.mp4")
-				if err != nil {
-					ret = "uploader.UploadFile: " + err.Error()
+					err = uploader.UploadFile(resp.Body, "video.mp4")
+					if err != nil {
+						ret = "uploader.UploadFile: " + err.Error()
+					} else {
+						ret = "uploader.UploadFile: OK"
+					}
+
 				} else {
-					ret = "uploader.UploadFile: OK"
+					log.Println("Empty video")
+					ret = "Empty video"
 				}
 
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
