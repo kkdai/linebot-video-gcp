@@ -84,24 +84,22 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Handle only image message
 			case *linebot.ImageMessage:
-				log.Println("Got img msg from:", message)
-				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
-				ret := fmt.Sprintf("Get img from %s", message.ContentProvider.OriginalContentURL)
+				log.Println("Got img msg ID:", message.ID)
+
+				content, err := bot.GetMessageContent(message.ID).Do()
+				if err != nil {
+					log.Println("Got GetMessageContent err:", err)
+				}
+				defer content.Content.Close()
 
 				client, err := storage.NewClient(context.Background())
+				var ret string
 				if err != nil {
 					ret = "storage.NewClient: " + err.Error()
 				} else {
 					ret = "storage.NewClient: OK"
 				}
-				if len(message.ContentProvider.OriginalContentURL) > 0 {
-					// Get the video data
-					resp, err := http.Get(message.ContentProvider.OriginalContentURL)
-					if err != nil {
-						log.Print(err)
-					}
-					defer resp.Body.Close()
-
+				if content.ContentLength > 0 {
 					uploader := &ClientUploader{
 						cl:         client,
 						bucketName: bucketName,
@@ -109,7 +107,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.UploadFile(resp.Body, "test.jpg")
+					err = uploader.UploadFile(content.Content, "test.jpg")
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {
@@ -117,8 +115,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 
 				} else {
-					log.Println("Empty video")
-					ret = "Empty video"
+					log.Println("Empty img")
+					ret = "Empty img"
 				}
 
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
