@@ -5,7 +5,7 @@ go 1.17
 
 require (
 	cloud.google.com/go/storage v1.21.0
-	github.com/line/line-bot-sdk-go/v7 v7.13.0
+	github.com/line/line-bot-sdk-go/v7 v7.14.0
 )
 
 require (

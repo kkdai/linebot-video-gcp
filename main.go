@@ -66,11 +66,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						ret = "storage.NewClient: OK"
 					}
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
-						log.Print(err)
-					}
 				}
-
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+					log.Print(err)
+				}
 			// Handle only on Sticker message
 			case *linebot.StickerMessage:
 				var kw string
@@ -80,6 +79,41 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 				outStickerResult := fmt.Sprintf("收到貼圖訊息: %s, pkg: %s kw: %s  text: %s", message.StickerID, message.PackageID, kw, message.Text)
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(outStickerResult)).Do(); err != nil {
+					log.Print(err)
+				}
+
+			// Handle only video message
+			case *linebot.VideoMessage:
+				ret := fmt.Sprintf("Get video from %s", message.ContentProvider.OriginalContentURL)
+				client, err := storage.NewClient(context.Background())
+				if err != nil {
+					ret = "storage.NewClient: " + err.Error()
+				} else {
+					ret = "storage.NewClient: OK"
+				}
+
+				// Get the video data
+				resp, err := http.Get(message.ContentProvider.OriginalContentURL)
+				if err != nil {
+					log.Print(err)
+				}
+				defer resp.Body.Close()
+
+				uploader := &ClientUploader{
+					cl:         client,
+					bucketName: bucketName,
+					projectID:  projectID,
+					uploadPath: "test-files/",
+				}
+
+				err = uploader.UploadFile(resp.Body, "video.mp4")
+				if err != nil {
+					ret = "uploader.UploadFile: " + err.Error()
+				} else {
+					ret = "uploader.UploadFile: OK"
+				}
+
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
 					log.Print(err)
 				}
 			}

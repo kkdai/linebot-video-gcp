@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"time"
 )
 
@@ -17,7 +16,7 @@ type ClientUploader struct {
 }
 
 // UploadFile uploads an object
-func (c *ClientUploader) UploadFile(file multipart.File, object string) error {
+func (c *ClientUploader) UploadFile(file io.ReadCloser, object string) error {
 	ctx := context.Background()
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
