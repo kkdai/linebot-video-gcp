@@ -16,6 +16,7 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -92,6 +93,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					ret = "storage.NewClient: OK"
 				}
 
+				bodyBytes, _ := io.ReadAll(r.Body)
+
+				log.Println("Got video raw event data from:", string(bodyBytes))
 				log.Println("Got video msg from:", message)
 				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
 

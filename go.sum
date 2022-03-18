@@ -174,8 +174,6 @@ github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+o
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/line/line-bot-sdk-go/v7 v7.13.0 h1:YLKkwZhOU6n7lx9spMOY3Y/UwIBfFnxS+tY5szfW69Y=
-github.com/line/line-bot-sdk-go/v7 v7.13.0/go.mod h1:WNSLxxBiXoGZtSfoiDKGTXu6pJJh8RGzj4AeNvSCWEs=
 github.com/line/line-bot-sdk-go/v7 v7.14.0 h1:SL19vemo5zGvZQsTKfdo+mkMN3MY0EdykpDLyVP1GbQ=
 github.com/line/line-bot-sdk-go/v7 v7.14.0/go.mod h1:WNSLxxBiXoGZtSfoiDKGTXu6pJJh8RGzj4AeNvSCWEs=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
