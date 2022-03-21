@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"time"
 )
 
@@ -36,4 +37,23 @@ func (c *ClientUploader) UploadFile(file io.ReadCloser, object string) error {
 
 func buildFileName() string {
 	return time.Now().Format("20060102150405")
+}
+
+func (c *ClientUploader) MakePublic(object string) error {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %v", err)
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	acl := client.Bucket(c.bucketName).Object(object).ACL()
+	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return fmt.Errorf("ACLHandle.Set: %v", err)
+	}
+	log.Printf("Blob %v is now publicly accessible.\n", object)
+	return nil
 }

@@ -99,6 +99,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				} else {
 					ret = "storage.NewClient: OK"
 				}
+
+				fileN := buildFileName() + ".jpg"
 				if content.ContentLength > 0 {
 					uploader := &ClientUploader{
 						cl:         client,
@@ -107,7 +109,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					fileN := buildFileName() + ".jpg"
 					err = uploader.UploadFile(content.Content, fileN)
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
@@ -115,12 +116,21 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						ret = "uploader.UploadFile: OK" + " fileN: " + fileN
 					}
 
+					err = uploader.MakePublic(fileN)
+					if err != nil {
+						ret = ret + "\n uploader.MakePublic: " + err.Error()
+					} else {
+						ret = ret + "\n uploader.MakePublic: OK" + " fileN: " + fileN
+					}
+
 				} else {
 					log.Println("Empty img")
 					ret = "Empty img"
 				}
 
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+				imgurl := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, fileN)
+
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret), linebot.NewImageMessage(imgurl, imgurl)).Do(); err != nil {
 					log.Print(err)
 				}
 
