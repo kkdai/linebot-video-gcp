@@ -116,7 +116,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						ret = "uploader.UploadFile: OK" + " fileN: " + fileN
 					}
 
-					err = uploader.MakePublic(fileN)
+					err = uploader.MakePublic("test-files/" + fileN)
 					if err != nil {
 						ret = ret + "\n uploader.MakePublic: " + err.Error()
 					} else {
@@ -128,7 +128,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					ret = "Empty img"
 				}
 
-				imgurl := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, fileN)
+				imgurl := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, "test-files/"+fileN)
 
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret), linebot.NewImageMessage(imgurl, imgurl)).Do(); err != nil {
 					log.Print(err)
