@@ -107,7 +107,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.UploadFile(content.Content, "test.jpg")
+					err = uploader.UploadFile(content.Content, buildFileName()+".jpg")
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {
@@ -151,7 +151,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.UploadFile(resp.Body, "video.mp4")
+					err = uploader.UploadFile(resp.Body, buildFileName()+".mp4")
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {

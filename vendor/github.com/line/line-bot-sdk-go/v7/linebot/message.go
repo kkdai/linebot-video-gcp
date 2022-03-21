@@ -150,9 +150,12 @@ func (m *ImageMessage) AddEmoji(*Emoji) SendingMessage {
 
 // VideoMessage type
 type VideoMessage struct {
-	ID              string
-	Duration        int
-	ContentProvider *ContentProvider
+	ID                 string
+	OriginalContentURL string
+	PreviewImageURL    string
+	Duration           int
+	ContentProvider    *ContentProvider
+
 	quickReplyItems *QuickReplyItems
 	sender          *Sender
 	messageType     MessageType
@@ -161,17 +164,19 @@ type VideoMessage struct {
 // MarshalJSON method of VideoMessage
 func (m *VideoMessage) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
-		Type            MessageType      `json:"type"`
-		Duration        int              `json:"duration,omitempty"`
-		ContentProvider *ContentProvider `json:"contentProvider,omitempty"`
-		QuickReply      *QuickReplyItems `json:"quickReply,omitempty"`
-		Sender          *Sender          `json:"sender,omitempty"`
+		Type               MessageType      `json:"type"`
+		OriginalContentURL string           `json:"originalContentUrl"`
+		PreviewImageURL    string           `json:"previewImageUrl"`
+		Duration           int              `json:"duration,omitempty"`
+		QuickReply         *QuickReplyItems `json:"quickReply,omitempty"`
+		Sender             *Sender          `json:"sender,omitempty"`
 	}{
-		Type:            m.messageType,
-		Duration:        m.Duration,
-		ContentProvider: m.ContentProvider,
-		QuickReply:      m.quickReplyItems,
-		Sender:          m.sender,
+		Type:               m.messageType,
+		OriginalContentURL: m.OriginalContentURL,
+		PreviewImageURL:    m.PreviewImageURL,
+		Duration:           m.Duration,
+		QuickReply:         m.quickReplyItems,
+		Sender:             m.sender,
 	})
 }
 
@@ -578,11 +583,9 @@ func NewImageMessage(originalContentURL, previewImageURL string) *ImageMessage {
 // NewVideoMessage function
 func NewVideoMessage(originalContentURL, previewImageURL string) *VideoMessage {
 	return &VideoMessage{
-		messageType: MessageTypeVideo,
-		ContentProvider: &ContentProvider{
-			PreviewImageURL:    previewImageURL,
-			OriginalContentURL: originalContentURL,
-		},
+		OriginalContentURL: originalContentURL,
+		PreviewImageURL:    previewImageURL,
+		messageType:        MessageTypeVideo,
 	}
 }
 

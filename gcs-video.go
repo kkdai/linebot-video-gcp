@@ -33,3 +33,7 @@ func (c *ClientUploader) UploadFile(file io.ReadCloser, object string) error {
 
 	return nil
 }
+
+func buildFileName() string {
+	return time.Now().Format("20060102150405")
+}
