@@ -107,11 +107,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.UploadFile(content.Content, buildFileName()+".jpg")
+					fileN := buildFileName() + ".jpg"
+					err = uploader.UploadFile(content.Content, fileN)
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {
-						ret = "uploader.UploadFile: OK"
+						ret = "uploader.UploadFile: OK" + " fileN: " + fileN
 					}
 
 				} else {
