@@ -116,13 +116,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						ret = "uploader.UploadFile: OK" + " fileN: " + fileN
 					}
 
-					err = uploader.MakePublic("test-files/" + fileN)
-					if err != nil {
-						ret = ret + "\n uploader.MakePublic: " + err.Error()
-					} else {
-						ret = ret + "\n uploader.MakePublic: OK" + " fileN: " + fileN
-					}
-
 				} else {
 					log.Println("Empty img")
 					ret = "Empty img"
