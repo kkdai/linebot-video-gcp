@@ -86,6 +86,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			case *linebot.ImageMessage:
 				log.Println("Got img msg ID:", message.ID)
 
+				//Get image binary from LINE server based on message ID.
 				content, err := bot.GetMessageContent(message.ID).Do()
 				if err != nil {
 					log.Println("Got GetMessageContent err:", err)
@@ -109,22 +110,25 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.UploadFile(content.Content, fileN)
+					err = uploader.UploadImage(content.Content)
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {
 						ret = "uploader.UploadFile: OK" + " fileN: " + fileN
 					}
 
+					imgurl := uploader.GetPulicAddress()
+
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret), linebot.NewImageMessage(imgurl, imgurl)).Do(); err != nil {
+						log.Print(err)
+					}
 				} else {
 					log.Println("Empty img")
 					ret = "Empty img"
-				}
 
-				imgurl := fmt.Sprintf("https://storage.googleapis.com/%s/%s", bucketName, "test-files/"+fileN)
-
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret), linebot.NewImageMessage(imgurl, imgurl)).Do(); err != nil {
-					log.Print(err)
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+						log.Print(err)
+					}
 				}
 
 			// Handle only video message
@@ -155,7 +159,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.UploadFile(resp.Body, buildFileName()+".mp4")
+					err = uploader.uploadFile(resp.Body, buildFileName()+".mp4")
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {

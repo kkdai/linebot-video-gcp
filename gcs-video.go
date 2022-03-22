@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"time"
 )
 
@@ -14,17 +13,38 @@ type ClientUploader struct {
 	projectID  string
 	bucketName string
 	uploadPath string
+	objectName string
 }
 
-// UploadFile uploads an object
-func (c *ClientUploader) UploadFile(file io.ReadCloser, object string) error {
+// Get Public address, make sure the bocket's ACL is set to public-read.
+func (c *ClientUploader) GetPulicAddress() string {
+	if len(c.objectName) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("https://storage.googleapis.com/%s/%s", c.bucketName, c.uploadPath+"/"+c.objectName)
+}
+
+// Upload Image object
+func (c *ClientUploader) UploadImage(file io.ReadCloser) error {
+	c.objectName = buildFileName() + ".jpeg"
+	return c.uploadFile(file, c.objectName)
+}
+
+// Upload video object
+func (c *ClientUploader) UploadVideo(file io.ReadCloser) error {
+	c.objectName = buildFileName() + ".mp4"
+	return c.uploadFile(file, c.objectName)
+}
+
+// uploadFile uploads an object
+func (c *ClientUploader) uploadFile(file io.ReadCloser, object string) error {
 	ctx := context.Background()
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
 	defer cancel()
 
 	// Upload an object with storage.Writer.
-	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + object).NewWriter(ctx)
+	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + c.objectName).NewWriter(ctx)
 	if _, err := io.Copy(wc, file); err != nil {
 		return fmt.Errorf("io.Copy: %v", err)
 	}
@@ -37,23 +57,4 @@ func (c *ClientUploader) UploadFile(file io.ReadCloser, object string) error {
 
 func buildFileName() string {
 	return time.Now().Format("20060102150405")
-}
-
-func (c *ClientUploader) MakePublic(object string) error {
-	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		return fmt.Errorf("storage.NewClient: %v", err)
-	}
-	defer client.Close()
-
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
-
-	acl := client.Bucket(c.bucketName).Object(object).ACL()
-	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-		return fmt.Errorf("ACLHandle.Set: %v", err)
-	}
-	log.Printf("Blob %v is now publicly accessible.\n", object)
-	return nil
 }
