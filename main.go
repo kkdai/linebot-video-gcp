@@ -119,6 +119,19 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 					imgurl := uploader.GetPulicAddress()
 
+					if _, err = bot.ReplyMessage(event.ReplyToken,
+						linebot.NewTextMessage(ret),
+						linebot.NewFlexMessage("image",
+							&linebot.BubbleContainer{
+								Type: linebot.FlexContainerTypeBubble,
+								Hero: &linebot.ImageComponent{
+									Type: linebot.FlexComponentTypeVideo,
+									URL:  imgurl,
+								},
+							})).Do(); err != nil {
+						log.Print(err)
+					}
+
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret), linebot.NewImageMessage(imgurl, imgurl)).Do(); err != nil {
 						log.Print(err)
 					}
