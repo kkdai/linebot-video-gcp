@@ -21,7 +21,7 @@ func (c *ClientUploader) GetPulicAddress() string {
 	if len(c.objectName) == 0 {
 		return ""
 	}
-	return fmt.Sprintf("https://storage.googleapis.com/%s/%s", c.bucketName, c.uploadPath+"/"+c.objectName)
+	return fmt.Sprintf("https://storage.googleapis.com/%s/%s", c.bucketName, c.uploadPath+c.objectName)
 }
 
 // Upload Image object
