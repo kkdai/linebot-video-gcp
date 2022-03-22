@@ -146,25 +146,24 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Handle only video message
 			case *linebot.VideoMessage:
-				ret := fmt.Sprintf("Get video from %s", message.ContentProvider.OriginalContentURL)
+				log.Println("Got video msg ID:", message.ID)
+
+				//Get image binary from LINE server based on message ID.
+				content, err := bot.GetMessageContent(message.ID).Do()
+				if err != nil {
+					log.Println("Got GetMessageContent err:", err)
+				}
+				defer content.Content.Close()
+
 				client, err := storage.NewClient(context.Background())
+				var ret string
 				if err != nil {
 					ret = "storage.NewClient: " + err.Error()
 				} else {
 					ret = "storage.NewClient: OK"
 				}
 
-				log.Println("Got video msg from:", message)
-				log.Println("Got file from:", message.ContentProvider.OriginalContentURL)
-
-				if len(message.ContentProvider.OriginalContentURL) > 0 {
-					// Get the video data
-					resp, err := http.Get(message.ContentProvider.OriginalContentURL)
-					if err != nil {
-						log.Print(err)
-					}
-					defer resp.Body.Close()
-
+				if content.ContentLength > 0 {
 					uploader := &ClientUploader{
 						cl:         client,
 						bucketName: bucketName,
@@ -172,20 +171,43 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						uploadPath: "test-files/",
 					}
 
-					err = uploader.uploadFile(resp.Body, buildFileName()+".mp4")
+					err = uploader.UploadVideo(content.Content)
 					if err != nil {
 						ret = "uploader.UploadFile: " + err.Error()
 					} else {
-						ret = "uploader.UploadFile: OK"
+						ret = "uploader.UploadFile: OK, " + uploader.GetPulicAddress()
 					}
 
+					vdourl := uploader.GetPulicAddress()
+
+					if _, err = bot.ReplyMessage(event.ReplyToken,
+						linebot.NewTextMessage(ret),
+						linebot.NewFlexMessage("video",
+							&linebot.BubbleContainer{
+								Type: linebot.FlexContainerTypeBubble,
+								Hero: &linebot.VideoComponent{
+									Type: linebot.FlexComponentTypeVideo,
+									URL:  vdourl,
+									Action: &linebot.URIAction{
+										Label: "More information",
+										URI:   "http://linecorp.com/",
+									},
+									AspectRatio: linebot.FlexVideoAspectRatioType20to13,
+								},
+							})).Do(); err != nil {
+						log.Print(err)
+					}
+
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+						log.Print(err)
+					}
 				} else {
 					log.Println("Empty video")
 					ret = "Empty video"
-				}
 
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
-					log.Print(err)
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+						log.Print(err)
+					}
 				}
 			}
 		}
