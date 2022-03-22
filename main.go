@@ -186,27 +186,20 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							&linebot.BubbleContainer{
 								Type: linebot.FlexContainerTypeBubble,
 								Hero: &linebot.VideoComponent{
-									Type:       linebot.FlexComponentTypeVideo,
-									URL:        vdourl,
-									PreviewURL: "https://example.com/video_preview.png",
-									AltContent: &linebot.ImageComponent{
-										Type:        linebot.FlexComponentTypeImage,
-										URL:         "https://example.com/image.png",
-										Size:        linebot.FlexImageSizeTypeFull,
-										AspectRatio: linebot.FlexImageAspectRatioType20to13,
-										AspectMode:  linebot.FlexImageAspectModeTypeCover,
-									},
-									Action: &linebot.URIAction{
-										Label: "More information",
-										URI:   "http://linecorp.com/",
-									},
+									Type:        linebot.FlexComponentTypeVideo,
+									URL:         vdourl,
+									PreviewURL:  "https://example.com/video_preview.png",
 									AspectRatio: linebot.FlexVideoAspectRatioType20to13,
 								},
 								Body: &linebot.BoxComponent{
+									Type:   linebot.FlexComponentTypeBox,
+									Layout: linebot.FlexBoxLayoutTypeVertical,
 									Contents: []linebot.FlexComponent{
 										&linebot.TextComponent{
-											Type: linebot.FlexComponentTypeText,
-											Text: "Hello, world!",
+											Type:   linebot.FlexComponentTypeText,
+											Text:   "Hello, world!",
+											Weight: linebot.FlexTextWeightTypeBold,
+											Size:   linebot.FlexTextSizeTypeXl,
 										},
 									},
 								},
