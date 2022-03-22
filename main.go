@@ -202,6 +202,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 									},
 									AspectRatio: linebot.FlexVideoAspectRatioType20to13,
 								},
+								Body: &linebot.BoxComponent{
+									Contents: []linebot.FlexComponent{
+										&linebot.TextComponent{
+											Type: linebot.FlexComponentTypeText,
+											Text: "Hello, world!",
+										},
+									},
+								},
 							})).Do(); err != nil {
 						log.Print(err)
 					}
