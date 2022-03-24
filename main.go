@@ -58,7 +58,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch message := event.Message.(type) {
 			// Handle only on text message
 			case *linebot.TextMessage:
-				ret := message.Text
 
 				json, err := linebot.NewFlexMessage("video",
 					&linebot.BubbleContainer{
@@ -79,11 +78,27 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 								URI:   "http://linecorp.com/",
 							},
 							AspectRatio: linebot.FlexVideoAspectRatioType20to13,
+						},
+
+						Body: &linebot.BoxComponent{
+							Type:   linebot.FlexComponentTypeBox,
+							Layout: linebot.FlexBoxLayoutTypeVertical,
+							Contents: []linebot.FlexComponent{
+								&linebot.TextComponent{
+									Type:   linebot.FlexComponentTypeText,
+									Text:   "Title",
+									Weight: linebot.FlexTextWeightTypeBold,
+									Size:   linebot.FlexTextSizeTypeXl,
+									Align:  linebot.FlexComponentAlignTypeCenter,
+								},
+							},
 						}}).MarshalJSON()
 				if err != nil {
 					log.Print(err)
 				}
 				log.Print(">>>>", string(json))
+				ret := string(json)
+
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
 					log.Print(err)
 				}
