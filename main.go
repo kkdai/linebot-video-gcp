@@ -96,10 +96,47 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Print(err)
 				}
-				log.Print(">>>>", string(json))
+
+				vdoContainer, _ := linebot.UnmarshalFlexMessageJSON([]byte(`{
+					"type": "bubble",
+					"size": "mega",
+					"hero": {
+					  "type": "video",
+					  "url": "https://example.com/video.mp4",
+					  "previewUrl": "https://example.com/video_preview.png",
+					  "altContent": {
+						"type": "image",
+						"size": "full",
+						"aspectRatio": "20:13",
+						"aspectMode": "cover",
+						"url": "https://example.com/image.png"
+					  },
+					  "action": {
+						"type": "uri",
+						"label": "More information",
+						"uri": "http://linecorp.com/"
+					  },
+					  "aspectRatio": "20:13"
+					},
+					"body": {
+					  "type": "box",
+					  "layout": "vertical",
+					  "contents": [
+						{
+						  "type": "text",
+						  "text": "Brown Cafe",
+						  "weight": "bold",
+						  "size": "xl"
+						}
+					  ]
+					}
+				  }`))
+
+				json2, _ := linebot.NewFlexMessage("video", vdoContainer).MarshalJSON()
+				log.Print(">>>>\n", string(json))
 				ret := string(json)
 
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret), linebot.NewTextMessage(string(json2))).Do(); err != nil {
 					log.Print(err)
 				}
 			// Handle only on Sticker message
@@ -212,29 +249,44 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 					vdourl := uploader.GetPulicAddress()
 
+					vdoContainer, _ := linebot.UnmarshalFlexMessageJSON([]byte(`{
+						"type": "bubble",
+						"size": "mega",
+						"hero": {
+						  "type": "video",
+						  "url": "` + vdourl + `",
+						  "previewUrl": "https://example.com/video_preview.png",
+						  "altContent": {
+							"type": "image",
+							"size": "full",
+							"aspectRatio": "20:13",
+							"aspectMode": "cover",
+							"url": "https://example.com/image.png"
+						  },
+						  "action": {
+							"type": "uri",
+							"label": "More information",
+							"uri": "http://linecorp.com/"
+						  },
+						  "aspectRatio": "20:13"
+						},
+						"body": {
+						  "type": "box",
+						  "layout": "vertical",
+						  "contents": [
+							{
+							  "type": "text",
+							  "text": "Brown Cafe",
+							  "weight": "bold",
+							  "size": "xl"
+							}
+						  ]
+						}
+					  }`))
+
 					if _, err = bot.ReplyMessage(event.ReplyToken,
 						linebot.NewTextMessage(ret),
-						linebot.NewFlexMessage("video",
-							&linebot.BubbleContainer{
-								Type: linebot.FlexContainerTypeBubble,
-								Hero: &linebot.VideoComponent{
-									Type:       linebot.FlexComponentTypeVideo,
-									URL:        vdourl,
-									PreviewURL: "https://example.com/video_preview.png",
-									AltContent: &linebot.ImageComponent{
-										Type:        linebot.FlexComponentTypeImage,
-										URL:         "https://example.com/image.png",
-										Size:        linebot.FlexImageSizeTypeFull,
-										AspectRatio: linebot.FlexImageAspectRatioType20to13,
-										AspectMode:  linebot.FlexImageAspectModeTypeCover,
-									},
-									Action: &linebot.URIAction{
-										Label: "More information",
-										URI:   "http://linecorp.com/",
-									},
-									AspectRatio: linebot.FlexVideoAspectRatioType20to13,
-								},
-							})).Do(); err != nil {
+						linebot.NewFlexMessage("video", vdoContainer)).Do(); err != nil {
 						log.Print(err)
 					}
 
