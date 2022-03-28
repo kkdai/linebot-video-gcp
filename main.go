@@ -204,10 +204,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						Hero: &linebot.VideoComponent{
 							Type:       linebot.FlexComponentTypeVideo,
 							URL:        vdourl,
-							PreviewURL: "https://example.com/video_preview.png",
+							PreviewURL: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
 							AltContent: &linebot.ImageComponent{
 								Type:        linebot.FlexComponentTypeImage,
-								URL:         "https://example.com/image.png",
+								URL:         "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
 								Size:        linebot.FlexImageSizeTypeFull,
 								AspectRatio: linebot.FlexImageAspectRatioType20to13,
 								AspectMode:  linebot.FlexImageAspectModeTypeCover,
@@ -217,7 +217,23 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 								URI:   "http://linecorp.com/",
 							},
 							AspectRatio: linebot.FlexVideoAspectRatioType20to13,
-						}}
+						},
+						Body: &linebot.BoxComponent{
+							Type:   linebot.FlexComponentTypeBox,
+							Layout: linebot.FlexBoxLayoutTypeVertical,
+							Contents: []linebot.FlexComponent{
+								&linebot.TextComponent{
+									Type: linebot.FlexComponentTypeText,
+									Text: "hello",
+								},
+								&linebot.TextComponent{
+									Type: linebot.FlexComponentTypeText,
+									Text: "world",
+								},
+							},
+						},
+					}
+
 					if _, err = bot.ReplyMessage(event.ReplyToken,
 						linebot.NewTextMessage(ret),
 						linebot.NewFlexMessage("video", vdo)).Do(); err != nil {
