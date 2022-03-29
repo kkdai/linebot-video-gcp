@@ -58,33 +58,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			switch message := event.Message.(type) {
 			// Handle only on text message
 			case *linebot.TextMessage:
-
-				json, err := linebot.NewFlexMessage("video",
-					&linebot.BubbleContainer{
-						Type: linebot.FlexContainerTypeBubble,
-						Hero: &linebot.VideoComponent{
-							Type:       linebot.FlexComponentTypeVideo,
-							URL:        "url/vdo.mp4",
-							PreviewURL: "https://example.com/video_preview.png",
-							AltContent: &linebot.ImageComponent{
-								Type:        linebot.FlexComponentTypeImage,
-								URL:         "https://example.com/image.png",
-								Size:        linebot.FlexImageSizeTypeFull,
-								AspectRatio: linebot.FlexImageAspectRatioType20to13,
-								AspectMode:  linebot.FlexImageAspectModeTypeCover,
-							},
-							Action: &linebot.URIAction{
-								Label: "More information",
-								URI:   "http://linecorp.com/",
-							},
-							AspectRatio: linebot.FlexVideoAspectRatioType20to13,
-						},
-					}).MarshalJSON()
-				if err != nil {
-					log.Print(err)
-				}
-				log.Print(">>>>\n", string(json))
-				ret := string(json)
+				ret := message.Text
 
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
 					log.Print(err)
@@ -146,6 +120,16 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 								Hero: &linebot.ImageComponent{
 									Type: linebot.FlexComponentTypeVideo,
 									URL:  imgurl,
+								},
+								Body: &linebot.BoxComponent{
+									Type:   linebot.FlexComponentTypeBox,
+									Layout: linebot.FlexBoxLayoutTypeVertical,
+									Contents: []linebot.FlexComponent{
+										&linebot.TextComponent{
+											Type: linebot.FlexComponentTypeText,
+											Text: "hello",
+										},
+									},
 								},
 							})).Do(); err != nil {
 						log.Print(err)
@@ -225,10 +209,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
 									Text: "hello",
-								},
-								&linebot.TextComponent{
-									Type: linebot.FlexComponentTypeText,
-									Text: "world",
 								},
 							},
 						},
