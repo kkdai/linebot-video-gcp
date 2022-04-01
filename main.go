@@ -198,13 +198,12 @@ func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client
 
 		vdourl := uploader.GetPulicAddress()
 
-		var ret string
 		// Detect string from video
 		if err, ret = uploader.SpeachToText(); err != nil {
 			log.Print(err)
 		}
 
-		flx := newVideoFlexMsg(vdourl, ret)
+		flx := newVideoFlexMsg(vdourl, "result as follow: "+ret)
 
 		if _, err = bot.PushMessage(uid, linebot.NewFlexMessage("flex", flx)).Do(); err != nil {
 			log.Print(err)
