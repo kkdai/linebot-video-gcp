@@ -1,11 +1,15 @@
 package main
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"time"
+
+	speech "cloud.google.com/go/speech/apiv1"
+	"cloud.google.com/go/storage"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
 type ClientUploader struct {
@@ -36,12 +40,64 @@ func (c *ClientUploader) UploadVideo(file io.ReadCloser) error {
 	return c.uploadFile(file, c.objectName)
 }
 
+// Upload audio for STT services.
+func (c *ClientUploader) UploadAudio(file io.ReadCloser) error {
+	c.objectName = buildFileName() + ".mp3"
+	return c.uploadFile(file, c.objectName)
+}
+
+// uploadFile uploads an object
+func (c *ClientUploader) SpeachToText() (error, string) {
+	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+	defer cancel()
+	// Creates a client.
+	client, err := speech.NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+		return err, fmt.Sprintf("Failed to create client: %v", err)
+	}
+	// The path to the remote audio file to transcribe.
+	fileURI := "gs://cloud-samples-data/speech/brooklyn_bridge.raw"
+
+	// Detects speech in the audio file.
+	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
+		Config: &speechpb.RecognitionConfig{
+			Encoding:        speechpb.RecognitionConfig_LINEAR16,
+			SampleRateHertz: 16000,
+			LanguageCode:    "en-US",
+		},
+		Audio: &speechpb.RecognitionAudio{
+			AudioSource: &speechpb.RecognitionAudio_Uri{Uri: fileURI},
+		},
+	})
+	if err != nil {
+		log.Fatalf("failed to recognize: %v", err)
+		return err, fmt.Sprintf("failed to recognize: %v", err)
+	}
+
+	// Prints the results.
+	for _, result := range resp.Results {
+		for _, alt := range result.Alternatives {
+			fmt.Printf("\"%v\" (confidence=%3f)\n", alt.Transcript, alt.Confidence)
+		}
+	}
+	return nil, fmt.Sprintf("\"%v\" (confidence=%3f)\n", resp.Results[0].Alternatives[0].Transcript, resp.Results[0].Alternatives[0].Confidence)
+}
+
 // uploadFile uploads an object
 func (c *ClientUploader) uploadFile(file io.ReadCloser, object string) error {
 	ctx := context.Background()
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
 	defer cancel()
+	// Creates a client.
+	client, err := speech.NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	defer client.Close()
 
 	// Upload an object with storage.Writer.
 	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + c.objectName).NewWriter(ctx)
