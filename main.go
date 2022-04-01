@@ -151,63 +151,60 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			// Handle only video message
 			case *linebot.VideoMessage:
 				log.Println("Got video msg ID:", message.ID)
+				ret := "影片上傳判斷中，請稍候"
 
-				//Get image binary from LINE server based on message ID.
-				content, err := bot.GetMessageContent(message.ID).Do()
-				if err != nil {
-					log.Println("Got GetMessageContent err:", err)
-				}
-				defer content.Content.Close()
+				go uploadAndDectect(event.Source.UserID, message, bot)
 
-				client, err := storage.NewClient(context.Background())
-				var ret string
-				if err != nil {
-					ret = "storage.NewClient: " + err.Error()
-				} else {
-					ret = "storage.NewClient: OK"
-				}
-
-				if content.ContentLength > 0 {
-					uploader := &ClientUploader{
-						cl:         client,
-						bucketName: bucketName,
-						projectID:  projectID,
-						uploadPath: "test-files/",
-					}
-
-					err = uploader.UploadVideo(content.Content)
-					if err != nil {
-						ret = "uploader.UploadFile: " + err.Error()
-					} else {
-						ret = "uploader.UploadFile: OK, " + uploader.GetPulicAddress()
-					}
-
-					vdourl := uploader.GetPulicAddress()
-					flx := newVideoFlexMsg(vdourl)
-
-					if _, err = bot.ReplyMessage(event.ReplyToken,
-						linebot.NewTextMessage(ret),
-						linebot.NewFlexMessage("video", flx)).Do(); err != nil {
-						log.Print(err)
-					}
-
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
-						log.Print(err)
-					}
-				} else {
-					log.Println("Empty video")
-					ret = "Empty video"
-
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(ret)).Do(); err != nil {
-						log.Print(err)
-					}
+				if _, err = bot.ReplyMessage(event.ReplyToken,
+					linebot.NewTextMessage(ret)).Do(); err != nil {
+					log.Print(err)
 				}
 			}
 		}
 	}
 }
 
-func newVideoFlexMsg(video string) linebot.FlexContainer {
+func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client) {
+	//Get image binary from LINE server based on message ID.
+	content, err := bot.GetMessageContent(msg.ID).Do()
+	if err != nil {
+		log.Println("Got GetMessageContent err:", err)
+	}
+	defer content.Content.Close()
+
+	client, err := storage.NewClient(context.Background())
+	var ret string
+	if err != nil {
+		ret = "storage.NewClient: " + err.Error()
+	} else {
+		ret = "storage.NewClient: OK"
+	}
+
+	if content.ContentLength > 0 {
+		uploader := &ClientUploader{
+			cl:         client,
+			bucketName: bucketName,
+			projectID:  projectID,
+			uploadPath: "test-files/",
+		}
+
+		err = uploader.UploadVideo(content.Content)
+		if err != nil {
+			ret = "uploader.UploadFile: " + err.Error()
+		} else {
+			ret = "uploader.UploadFile: OK, " + uploader.GetPulicAddress()
+		}
+
+		vdourl := uploader.GetPulicAddress()
+		flx := newVideoFlexMsg(vdourl, "video link:"+vdourl+" ret:"+ret)
+
+		if _, err = bot.PushMessage(uid, linebot.NewFlexMessage("flex", flx)).Do(); err != nil {
+			log.Print(err)
+		}
+	}
+}
+
+func newVideoFlexMsg(video, text string) linebot.FlexContainer {
 	return &linebot.BubbleContainer{
 		Type: linebot.FlexContainerTypeBubble,
 		Hero: &linebot.VideoComponent{
@@ -233,7 +230,7 @@ func newVideoFlexMsg(video string) linebot.FlexContainer {
 			Contents: []linebot.FlexComponent{
 				&linebot.TextComponent{
 					Type: linebot.FlexComponentTypeText,
-					Text: "hello",
+					Text: text,
 				},
 			},
 		},
