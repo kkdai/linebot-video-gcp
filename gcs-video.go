@@ -83,12 +83,15 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 	}
 
 	// Prints the results.
+	var resultStr string
 	for _, result := range resp.Results {
 		for _, alt := range result.Alternatives {
-			fmt.Printf("\"%v\" (confidence=%3f)\n", alt.Transcript, alt.Confidence)
+			log.Printf("\"%v\" (confidence=%3f)\n", alt.Transcript, alt.Confidence)
+			resultStr = resultStr + alt.Transcript + " "
 		}
 	}
-	return nil, fmt.Sprintf("\"%v\" (confidence=%3f)\n", resp.Results[0].Alternatives[0].Transcript, resp.Results[0].Alternatives[0].Confidence)
+
+	return nil, resultStr
 }
 
 // uploadFile uploads an object
