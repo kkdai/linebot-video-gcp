@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"time"
 
 	speech "cloud.google.com/go/speech/apiv1"
@@ -48,6 +49,10 @@ func (c *ClientUploader) UploadAudio(file io.ReadCloser) error {
 
 // uploadFile uploads an object
 func (c *ClientUploader) SpeachToText() (error, string) {
+	if !strings.Contains(c.objectName, ".mp3") {
+		return fmt.Errorf("object name must be mp3"), ""
+	}
+
 	ctx := context.Background()
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
@@ -59,7 +64,7 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 		return err, fmt.Sprintf("Failed to create client: %v", err)
 	}
 	// The path to the remote audio file to transcribe.
-	fileURI := "gs://cloud-samples-data/speech/brooklyn_bridge.raw"
+	fileURI := c.objectName
 
 	// Detects speech in the audio file.
 	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
