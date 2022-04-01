@@ -13,12 +13,13 @@
 package main
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"cloud.google.com/go/storage"
 
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
@@ -182,41 +183,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}
 
 					vdourl := uploader.GetPulicAddress()
-
-					vdo := &linebot.BubbleContainer{
-						Type: linebot.FlexContainerTypeBubble,
-						Hero: &linebot.VideoComponent{
-							Type:       linebot.FlexComponentTypeVideo,
-							URL:        vdourl,
-							PreviewURL: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
-							AltContent: &linebot.ImageComponent{
-								Type:        linebot.FlexComponentTypeImage,
-								URL:         "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
-								Size:        linebot.FlexImageSizeTypeFull,
-								AspectRatio: linebot.FlexImageAspectRatioType20to13,
-								AspectMode:  linebot.FlexImageAspectModeTypeCover,
-							},
-							Action: &linebot.URIAction{
-								Label: "More information",
-								URI:   "http://linecorp.com/",
-							},
-							AspectRatio: linebot.FlexVideoAspectRatioType20to13,
-						},
-						Body: &linebot.BoxComponent{
-							Type:   linebot.FlexComponentTypeBox,
-							Layout: linebot.FlexBoxLayoutTypeVertical,
-							Contents: []linebot.FlexComponent{
-								&linebot.TextComponent{
-									Type: linebot.FlexComponentTypeText,
-									Text: "hello",
-								},
-							},
-						},
-					}
+					flx := newVideoFlexMsg(vdourl)
 
 					if _, err = bot.ReplyMessage(event.ReplyToken,
 						linebot.NewTextMessage(ret),
-						linebot.NewFlexMessage("video", vdo)).Do(); err != nil {
+						linebot.NewFlexMessage("video", flx)).Do(); err != nil {
 						log.Print(err)
 					}
 
@@ -233,5 +204,38 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	}
+}
+
+func newVideoFlexMsg(video string) linebot.FlexContainer {
+	return &linebot.BubbleContainer{
+		Type: linebot.FlexContainerTypeBubble,
+		Hero: &linebot.VideoComponent{
+			Type:       linebot.FlexComponentTypeVideo,
+			URL:        video,
+			PreviewURL: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+			AltContent: &linebot.ImageComponent{
+				Type:        linebot.FlexComponentTypeImage,
+				URL:         "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+				Size:        linebot.FlexImageSizeTypeFull,
+				AspectRatio: linebot.FlexImageAspectRatioType20to13,
+				AspectMode:  linebot.FlexImageAspectModeTypeCover,
+			},
+			Action: &linebot.URIAction{
+				Label: "More information",
+				URI:   "http://linecorp.com/",
+			},
+			AspectRatio: linebot.FlexVideoAspectRatioType20to13,
+		},
+		Body: &linebot.BoxComponent{
+			Type:   linebot.FlexComponentTypeBox,
+			Layout: linebot.FlexBoxLayoutTypeVertical,
+			Contents: []linebot.FlexComponent{
+				&linebot.TextComponent{
+					Type: linebot.FlexComponentTypeText,
+					Text: "hello",
+				},
+			},
+		},
 	}
 }
