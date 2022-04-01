@@ -64,7 +64,7 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 		return err, fmt.Sprintf("Failed to create client: %v", err)
 	}
 	// The path to the remote audio file to transcribe.
-	fileURI := c.GetPulicAddress()
+	fileURI := fmt.Sprintf("gs://%s/%s", c.bucketName, c.uploadPath+c.objectName)
 
 	// Detects speech in the audio file.
 	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
