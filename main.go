@@ -188,8 +188,8 @@ func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client
 			uploadPath: "test-files/",
 		}
 
-		// Upload video to Google Cloud Storage
-		err = uploader.UploadVideo(content.Content)
+		// Upload Audio to Google Cloud Storage
+		err = uploader.UploadAudio(content.Content)
 		if err != nil {
 			ret = "uploader.UploadFile: " + err.Error()
 		} else {
