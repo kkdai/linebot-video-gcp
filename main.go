@@ -238,6 +238,11 @@ func newVideoFlexMsg(video, text string) linebot.FlexContainer {
 				&linebot.TextComponent{
 					Type: linebot.FlexComponentTypeText,
 					Wrap: true,
+					Text: "翻譯後的文字如下",
+				},
+				&linebot.TextComponent{
+					Type: linebot.FlexComponentTypeText,
+					Wrap: true,
 					Text: text,
 				},
 			},
