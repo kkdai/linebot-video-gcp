@@ -203,7 +203,7 @@ func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client
 			log.Print(err)
 		}
 
-		flx := newVideoFlexMsg(vdourl, "result as follow: "+ret)
+		flx := newVideoFlexMsg(vdourl, ret)
 
 		if _, err = bot.PushMessage(uid, linebot.NewFlexMessage("flex", flx)).Do(); err != nil {
 			log.Print(err)
