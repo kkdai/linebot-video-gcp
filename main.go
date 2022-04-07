@@ -212,6 +212,8 @@ func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client
 }
 
 func newVideoFlexMsg(video, text string) linebot.FlexContainer {
+	flex4 := 4
+	flex1 := 1
 	return &linebot.BubbleContainer{
 		Type: linebot.FlexContainerTypeBubble,
 		Hero: &linebot.VideoComponent{
@@ -232,18 +234,38 @@ func newVideoFlexMsg(video, text string) linebot.FlexContainer {
 			AspectRatio: linebot.FlexVideoAspectRatioType20to13,
 		},
 		Body: &linebot.BoxComponent{
-			Type:   linebot.FlexComponentTypeBox,
-			Layout: linebot.FlexBoxLayoutTypeVertical,
+			Type:    linebot.FlexComponentTypeBox,
+			Layout:  linebot.FlexBoxLayoutTypeVertical,
+			Spacing: linebot.FlexComponentSpacingTypeMd,
 			Contents: []linebot.FlexComponent{
 				&linebot.TextComponent{
-					Type: linebot.FlexComponentTypeText,
-					Wrap: true,
-					Text: "翻譯後的文字如下",
+					Type:    linebot.FlexComponentTypeText,
+					Wrap:    true,
+					Weight:  linebot.FlexTextWeightTypeBold,
+					Gravity: linebot.FlexComponentGravityTypeCenter,
+					Text:    "翻譯後的文字如下",
 				},
-				&linebot.TextComponent{
-					Type: linebot.FlexComponentTypeText,
-					Wrap: true,
-					Text: text,
+				&linebot.BoxComponent{
+					Type:    linebot.FlexComponentTypeBox,
+					Layout:  linebot.FlexBoxLayoutTypeBaseline,
+					Spacing: linebot.FlexComponentSpacingTypeSm,
+					Contents: []linebot.FlexComponent{
+						&linebot.TextComponent{
+							Type:  linebot.FlexComponentTypeText,
+							Wrap:  true,
+							Size:  linebot.FlexTextSizeTypeSm,
+							Color: "#AAAAAA",
+							Text:  "內容",
+							Flex:  &flex1,
+						},
+						&linebot.TextComponent{
+							Type:  linebot.FlexComponentTypeText,
+							Wrap:  true,
+							Size:  linebot.FlexTextSizeTypeSm,
+							Color: "#666666",
+							Text:  text,
+							Flex:  &flex4,
+						}},
 				},
 			},
 		},
