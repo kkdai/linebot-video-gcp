@@ -237,6 +237,7 @@ func newVideoFlexMsg(video, text string) linebot.FlexContainer {
 			Contents: []linebot.FlexComponent{
 				&linebot.TextComponent{
 					Type: linebot.FlexComponentTypeText,
+					Wrap: true,
 					Text: text,
 				},
 			},
