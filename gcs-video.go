@@ -69,9 +69,9 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 	// Detects speech in the audio file.
 	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
-			Encoding:        speechpb.RecognitionConfig_LINEAR16,
-			SampleRateHertz: 16000,
-			LanguageCode:    "en-US",
+			Encoding:        speechpb.RecognitionConfig_AMR_WB,
+			SampleRateHertz: 48000,
+			LanguageCode:    "zh-TW",
 		},
 		Audio: &speechpb.RecognitionAudio{
 			AudioSource: &speechpb.RecognitionAudio_Uri{Uri: fileURI},
