@@ -19,6 +19,8 @@
 //
 // Converts audio to text by applying powerful neural network models.
 //
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//
 // Example usage
 //
 // To get started with this package, create a client.
@@ -46,7 +48,7 @@
 //
 //  req := &speechpb.RecognizeRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1#RecognizeRequest.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#RecognizeRequest.
 //  }
 //  resp, err := c.Recognize(ctx, req)
 //  if err != nil {
@@ -65,7 +67,7 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit https://pkg.go.dev/cloud.google.com/go.
-package speech // import "cloud.google.com/go/speech/apiv1"
+package speech // import "cloud.google.com/go/speech/apiv1p1beta1"
 
 import (
 	"context"

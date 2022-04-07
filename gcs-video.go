@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	speech "cloud.google.com/go/speech/apiv1"
+	speech "cloud.google.com/go/speech/apiv1p1beta1" //v1p1beta1
 	"cloud.google.com/go/storage"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1" //v1p1beta1
 )
 
 type ClientUploader struct {
@@ -69,7 +69,7 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 	// Detects speech in the audio file.
 	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
-			Encoding:        speechpb.RecognitionConfig_AMR_WB,
+			Encoding:        speechpb.RecognitionConfig_MP3,
 			SampleRateHertz: 48000,
 			LanguageCode:    "zh-TW",
 		},

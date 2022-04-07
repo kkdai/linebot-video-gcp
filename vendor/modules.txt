@@ -15,7 +15,7 @@ cloud.google.com/go/compute/metadata
 cloud.google.com/go/iam
 # cloud.google.com/go/speech v1.3.0
 ## explicit; go 1.16
-cloud.google.com/go/speech/apiv1
+cloud.google.com/go/speech/apiv1p1beta1
 cloud.google.com/go/speech/internal
 # cloud.google.com/go/storage v1.21.0
 ## explicit; go 1.15
@@ -135,7 +135,7 @@ google.golang.org/appengine/urlfetch
 # google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 ## explicit; go 1.15
 google.golang.org/genproto/googleapis/api/annotations
-google.golang.org/genproto/googleapis/cloud/speech/v1
+google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1
 google.golang.org/genproto/googleapis/iam/v1
 google.golang.org/genproto/googleapis/longrunning
 google.golang.org/genproto/googleapis/rpc/code
