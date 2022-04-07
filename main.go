@@ -189,7 +189,7 @@ func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client
 		}
 
 		// Upload Audio to Google Cloud Storage
-		err = uploader.UploadAudio(content.Content)
+		err = uploader.UploadVideo(content.Content)
 		if err != nil {
 			ret = "uploader.UploadFile: " + err.Error()
 		} else {

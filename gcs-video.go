@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"strings"
 	"time"
 
 	speech "cloud.google.com/go/speech/apiv1p1beta1" //v1p1beta1
@@ -41,18 +40,8 @@ func (c *ClientUploader) UploadVideo(file io.ReadCloser) error {
 	return c.uploadFile(file, c.objectName)
 }
 
-// Upload audio for STT services.
-func (c *ClientUploader) UploadAudio(file io.ReadCloser) error {
-	c.objectName = buildFileName() + ".mp3"
-	return c.uploadFile(file, c.objectName)
-}
-
 // uploadFile uploads an object
 func (c *ClientUploader) SpeachToText() (error, string) {
-	if !strings.Contains(c.objectName, ".mp3") {
-		return fmt.Errorf("object name must be mp3"), ""
-	}
-
 	ctx := context.Background()
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
