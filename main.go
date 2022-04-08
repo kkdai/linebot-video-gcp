@@ -153,7 +153,15 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println("Got video msg ID:", message.ID)
 				ret := "影片上傳判斷中，請稍候"
 
-				go uploadAndDectect(event.Source.UserID, message, bot)
+				// Determine the push msg target.
+				target := event.Source.UserID
+				if event.Source.GroupID != "" {
+					target = event.Source.GroupID
+				} else if event.Source.RoomID != "" {
+					target = event.Source.RoomID
+				}
+
+				go uploadAndDectect(target, message, bot)
 
 				if _, err = bot.ReplyMessage(event.ReplyToken,
 					linebot.NewTextMessage(ret)).Do(); err != nil {
@@ -164,7 +172,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client) {
+func uploadAndDectect(target string, msg *linebot.VideoMessage, bot *linebot.Client) {
 	//Get image binary from LINE server based on message ID.
 	content, err := bot.GetMessageContent(msg.ID).Do()
 	if err != nil {
@@ -205,7 +213,7 @@ func uploadAndDectect(uid string, msg *linebot.VideoMessage, bot *linebot.Client
 
 		flx := newVideoFlexMsg(vdourl, ret)
 
-		if _, err = bot.PushMessage(uid, linebot.NewFlexMessage("flex", flx)).Do(); err != nil {
+		if _, err = bot.PushMessage(target, linebot.NewFlexMessage("flex", flx)).Do(); err != nil {
 			log.Print(err)
 		}
 	}
