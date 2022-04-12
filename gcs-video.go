@@ -86,15 +86,8 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 // uploadFile uploads an object
 func (c *ClientUploader) uploadFile(file io.ReadCloser, object string) error {
 	ctx := context.Background()
-
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
 	defer cancel()
-	// Creates a client.
-	client, err := speech.NewClient(ctx)
-	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
-	}
-	defer client.Close()
 
 	// Upload an object with storage.Writer.
 	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + c.objectName).NewWriter(ctx)
