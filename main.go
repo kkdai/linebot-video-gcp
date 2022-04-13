@@ -173,7 +173,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func uploadAndDectect(target string, msg *linebot.VideoMessage, bot *linebot.Client) {
-	//Get image binary from LINE server based on message ID.
+	//Get video content from LINE server based on message ID.
 	content, err := bot.GetMessageContent(msg.ID).Do()
 	if err != nil {
 		log.Println("Got GetMessageContent err:", err)
@@ -211,6 +211,9 @@ func uploadAndDectect(target string, msg *linebot.VideoMessage, bot *linebot.Cli
 			log.Print(err)
 		}
 
+		if len(ret) == 0 {
+			ret = "無法辨識影片內容文字，請重新輸入。"
+		}
 		flx := newVideoFlexMsg(vdourl, ret)
 
 		if _, err = bot.PushMessage(target, linebot.NewFlexMessage("flex", flx)).Do(); err != nil {
