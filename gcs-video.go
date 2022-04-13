@@ -31,13 +31,13 @@ func (c *ClientUploader) GetPulicAddress() string {
 // Upload Image object
 func (c *ClientUploader) UploadImage(file io.ReadCloser) error {
 	c.objectName = buildFileName() + ".jpeg"
-	return c.uploadFile(file, c.objectName)
+	return c.uploadFile(file)
 }
 
 // Upload video object
 func (c *ClientUploader) UploadVideo(file io.ReadCloser) error {
 	c.objectName = buildFileName() + ".mp4"
-	return c.uploadFile(file, c.objectName)
+	return c.uploadFile(file)
 }
 
 // uploadFile uploads an object
@@ -84,7 +84,7 @@ func (c *ClientUploader) SpeachToText() (error, string) {
 }
 
 // uploadFile uploads an object
-func (c *ClientUploader) uploadFile(file io.ReadCloser, object string) error {
+func (c *ClientUploader) uploadFile(file io.ReadCloser) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
 	defer cancel()
