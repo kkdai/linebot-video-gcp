@@ -240,7 +240,7 @@ func newVideoFlexMsg(video, text string) linebot.FlexContainer {
 			},
 			Action: &linebot.URIAction{
 				Label: "More information",
-				URI:   "http://linecorp.com/",
+				URI:   "https://github.com/kkdai/linebot-video-gcp",
 			},
 			AspectRatio: linebot.FlexVideoAspectRatioType20to13,
 		},
