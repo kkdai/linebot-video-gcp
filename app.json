@@ -33,7 +33,7 @@
       "required": true
     },
     "GOOGLE_APPLICATION_CREDENTIALS": {
-      "description": "It is the fix env for GCP SDK",
+      "description": "It is the fix env for GCP SDK (DO NOT CHANGE IT)",
       "required": true,
       "value": "google-credentials.json"
     },
