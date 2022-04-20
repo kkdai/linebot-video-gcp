@@ -17,11 +17,28 @@
   ],
   "env": {
     "ChannelAccessToken": {
-      "description": "Channel Access Token",
+      "description": "LINE OA Channel Access Token",
       "required": true
     },
     "ChannelSecret": {
-      "description": "Channel Secret",
+      "description": "LINE OA Channel Secret",
+      "required": true
+    },
+    "GCS_PROJECT_ID": {
+      "description": "Google Cloud Storage Project ID",
+      "required": true
+    },
+    "GCS_BUCKET_NAME": {
+      "description": "Google Cloud Storage Bucket Name",
+      "required": true
+    },
+    "GOOGLE_APPLICATION_CREDENTIALS": {
+      "description": "It is the fix env for GCP SDK",
+      "required": true,
+      "value": "google-credentials.json"
+    },
+    "GOOGLE_CREDENTIALS": {
+      "description": "Google credentials json content here.",
       "required": true
     }
   }
