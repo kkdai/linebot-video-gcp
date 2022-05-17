@@ -6,7 +6,7 @@ go 1.17
 require (
 	cloud.google.com/go/speech v1.3.0
 	cloud.google.com/go/storage v1.21.0
-	github.com/line/line-bot-sdk-go/v7 v7.14.0
+	github.com/line/line-bot-sdk-go/v7 v7.15.0
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 )
 
